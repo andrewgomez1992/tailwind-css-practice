@@ -1,6 +1,25 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 
 function App() {
+  const [images, setImages] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [term, setTerm] = useState("");
+
+  useEffect(() => {
+    axios
+      .get(
+        `https://pixabay.com/api/?key=${process.env.REACT_APP_PIXABAY_API_KEY}&q=${term}&image_type=photo&pretty=true`
+      )
+      .then((res) => {
+        setImages(res.data.hits);
+        // console.log("images", images);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
+
   return (
     <div className="max-w-sm rounded overflow-hidden shadow-lg">
       <img src="https://source.unsplash.com/random" alt="" className="w-full" />
