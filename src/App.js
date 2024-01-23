@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import ImageCard from "./components/ImageCard";
 
 function App() {
   const [images, setImages] = useState([]);
@@ -7,51 +8,28 @@ function App() {
   const [term, setTerm] = useState("");
 
   useEffect(() => {
-    axios
-      .get(
-        `https://pixabay.com/api/?key=${process.env.REACT_APP_PIXABAY_API_KEY}&q=${term}&image_type=photo&pretty=true`
-      )
-      .then((res) => {
-        setImages(res.data.hits);
-        // console.log("images", images);
-      })
-      .catch((err) => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `https://pixabay.com/api/?key=${process.env.REACT_APP_PIXABAY_API_KEY}&q=${term}&image_type=photo&pretty=true`
+        );
+        setImages(response?.data?.hits);
+        setIsLoading(false);
+        console.log("images", response?.data?.hits);
+      } catch (err) {
         console.log(err);
-      });
-  }, []);
+      }
+    };
+
+    fetchData();
+  }, [term]);
 
   return (
-    <div className="max-w-sm rounded overflow-hidden shadow-lg">
-      <img src="https://source.unsplash.com/random" alt="" className="w-full" />
-      <div className="px-6 py-4">
-        <div className="font-bold text-purple-500 text-xl mb-2">
-          Photo by John Doe
-        </div>
-        <ul>
-          <li>
-            <strong>Views: </strong>
-            3499
-          </li>
-          <li>
-            <strong>Downloads: </strong>
-            230
-          </li>
-          <li>
-            <strong>Likes: </strong>
-            2300
-          </li>
-        </ul>
-      </div>
-      <div className="px-6 py-4">
-        <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2">
-          #tag1
-        </span>
-        <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2">
-          #tag2
-        </span>
-        <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2">
-          #tag3
-        </span>
+    <div className="container mx-auto mt-4">
+      <div className="grid grid-cols-3 gap-4">
+        {images.map((image) => (
+          <ImageCard key={image.id} image={image} />
+        ))}
       </div>
     </div>
   );
